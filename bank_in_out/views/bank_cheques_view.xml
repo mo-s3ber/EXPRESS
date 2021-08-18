@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report 
+            id="action_report_bank_cheques_in_out"
+            model="bank.cheques.in.out"
+            string="كشف حساب بنك"
+            report_type="qweb-pdf"
+            name="bank_in_out.bank_cheques_report_in_out"
+            file="bank_in_out.bank_cheques_report_in_out"
+            />
+    </data>
+</odoo>

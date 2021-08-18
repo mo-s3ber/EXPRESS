@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="in_out_payment_report_t">
+		<t t-call="web.html_container">
+
+
+			<t t-set="product_category" t-value="[]"/>
+			<t t-set="product_list" t-value="[]"/>
+			<t t-set="customer_list" t-value="[]"/>
+			<t t-set="total" t-value="0"/>
+
+			<t t-foreach="cheques_list" t-as="l">
+
+				<t t-set="customer_list" t-value="customer_list+[l['partner']]"/>
+				 
+
+
+			</t>
+			 
+			 
+			<t t-set="i" t-value="0"/>
+			<t t-call="web.external_layout">
+				<div class="page">
+					<div class="text-right">
+
+
+						<t t-if="data_check==True">
+
+							<p class="text-center">
+								<br></br>
+								<b>لا يوجــد بيانـــــات</b>
+							</p>
+						</t>
+					</div>
+				</div>
+			</t>
+
+
+
+
+
+			<t t-foreach="set(customer_list)" t-as="customer">
+				<t t-call="web.external_layout">
+					<div class="page">
+						<p class="text-right">
+							<b>اسم العميـــــل :								<span t-esc="customer" />
+							</b>
+						</p>
+
+						<t t-if="data_check==False">
+							 
+							<div>
+								 
+
+								<table align="right" style="black;border-top: 1px solid black;width:100%">
+									<thead>
+										<tr>
+
+
+											<th style="border: 1px solid black;white-space: text-nowrap;text-align:center;width:100px">   المبلـــغ </th>
+
+											<th style="border: 1px solid black;white-space: text-nowrap;text-align:center;width:100px">تـــــــــــاريخ  الاستـــــلام
+												<br></br>تــاريخ الاستحقاق 
+											</th>
+											<th style="border: 1px solid black;white-space: text-nowrap;text-align:center;width:50px">  رقم الشــيك
+												<br></br>اذن الايداع
+											</th>
+											<th style="border: 1px solid black;white-space: text-nowrap;text-align:center;width:20px"> م
+											</th>
+
+
+
+
+										</tr>
+									</thead>
+									<tbody>
+
+										<t t-set="total_price" t-value="0"/>
+										<t t-set="total_qty" t-value="0"/>
+
+										<t t-set="i" t-value="0"/>
+
+										<t t-foreach="cheques_list" t-as="cheques_list">
+
+											<t t-if="customer==cheques_list['partner'] ">
+											 
+												<t t-if="cheques_list['state']!='cs_return' or cheques_list['state']!='rejected'">
+
+
+													<t t-set="total_price" t-value="total_price+cheques_list['total']"/>
+
+													<t t-set="i" t-value="i+1"/>
+													<tr>
+
+														<td style="border: 1px solid black;white-space: text-nowrap;text-align:center;width:100px ">
+															<span t-esc="cheques_list['total']" />
+														</td>
+
+														<td style="border: 1px solid black;white-space: text-nowrap;text-align:center;width:100px ">
+															<span t-esc="cheques_list['check_payment']" />
+															<br></br>
+															<span t-esc="cheques_list['cheque_date']" />
+														</td>
+
+														<td style="border: 1px solid black;white-space: text-nowrap;text-align:center ;width:70px">
+															<span t-esc="cheques_list['cheque_number']" />
+															<br></br>
+															<span t-esc="cheques_list['id_payement']" />
+														</td>
+
+                                                        <td style="border: 1px solid black;white-space: text-nowrap;text-align:center ;width:20px">
+														 <span t-esc="i"/>
+														</td>
+
+													</tr>
+												</t>
+
+											</t>
+
+
+
+										</t>
+
+
+
+
+										<tr>
+
+											<td style="border: 1px solid black;white-space: text-nowrap;text-align:center;width:100px ">
+												<b>
+													<span t-esc="total_price" />
+												</b>
+											</td>
+
+											<td style="border: 1px solid black;white-space: text-nowrap;text-align:center;width:100px ">
+
+											</td>
+											<td style="border: 1px solid black;white-space: text-nowrap;text-align:center;width:70px">
+
+											</td>
+<td style="border: 1px solid black;white-space: text-nowrap;text-align:center ;width:20px">
+														 
+														</td>
+
+
+										</tr>
+
+									</tbody>
+
+
+								</table>
+							</div>
+						</t>
+
+
+						 
+					</div>
+				</t>
+
+			</t>
+		</t>
+	</template>
+	<record id="in_out_payment_cheques.action_report_in_out_payment_cheques" model="ir.actions.report">
+		<field name="paperformat_id" ref="move_product_in_to_out.paperformat_lowmargin" />
+	</record>
+
+</odoo>

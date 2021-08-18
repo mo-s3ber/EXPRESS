@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="bank_cheques_report_in_out">
+       <t t-call="web.html_container">
+             
+                <br/>
+                 
+					
+					 
+                    <t t-if="data_check==True">
+					  <t t-call="web.external_layout">
+								        <div class="page">
+								         <div class="text-right">
+					  <br/>
+					  <br/>
+					  <p class="text-center"><b>لا يــوجــد بيانـــــــات</b></p>
+					  </div></div></t>
+					</t>
+                             <t t-foreach="journal_list" t-as="jt">
+                    
+
+										<t t-call="web.external_layout">
+								        <div class="page" >
+											<t t-set="amount_debit" t-value="0"/>
+											<t t-set="amount_credit" t-value="0"/>
+
+								         <div class="text-right">
+											 <p align="right">البنك</p>
+											 <p  align="middle"><span t-esc="jt.name"/></p>
+											 <table align="right" class="table table-bordered">
+											    <thead>
+													<tr>
+
+														<th>صادر</th>
+                                                        <th>وارد</th>
+														<th>الشريك</th>
+
+														<th>البنك</th>
+														<th>التاريخ</th>
+
+
+
+													</tr>
+												</thead>
+												 <tbody>
+										     <t t-foreach="lines" t-as="line">
+												 <t t-if="line['journal_id']==jt">
+													 <t t-set="amount_debit" t-value="amount_debit+line['amount_debit']"/>
+											<t t-set="amount_credit" t-value="amount_credit+line['amount_credit']"/>
+												 <tr>
+
+													 <td><span t-esc="line['amount_credit']"/> </td>
+													 <td><span t-esc="line['amount_debit']"/> </td>
+
+													 <td><span t-esc="line['partner_id'].name"/> </td>
+													 <td><span t-esc="line['journal_id'].name"/> </td>
+													 <td><span t-esc="line['date']"/> </td>
+												 </tr>
+											     </t>
+											 </t>
+													 <tr>
+
+                                                         <td><span t-esc="amount_credit"/></td>
+														 <td><span t-esc="amount_debit"/></td>
+
+														 <td></td>
+														 <td></td>
+														 <td></td>
+													 </tr>
+													  <tr>
+
+
+														 <td colspan="2"><span t-esc="amount_debit-amount_credit"/></td>
+
+														 <td></td>
+
+														 <td colspan="2">الرصيـــــد</td>
+													 </tr>
+												 </tbody>
+											  </table>
+					                    </div>
+                                         </div>
+                
+                                  </t>
+							 </t>
+        </t>
+    </template>
+	 <record id="bank_in_out.action_report_bank_cheques_in_out" model="ir.actions.report">
+    <field name="paperformat_id" ref="move_product_in_to_out.paperformat_lowmargin" />
+</record>
+	 
+</odoo>

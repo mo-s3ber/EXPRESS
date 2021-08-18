@@ -1,0 +1,17 @@
+<odoo>
+  <record id="res_partner_inherited_view" model="ir.ui.view">
+		<field name="name">res_partner_inherited_view</field>
+		<field name="model">res.partner</field>
+		<field name="inherit_id" ref="base.view_partner_form" />
+		<field name="arch" type="xml">
+
+				<xpath expr="//field[@name='category_id']" position="after">
+
+					<field name="analytical_account" />
+					<button string="create_anal" name="create_anal" type="object"/>
+
+
+				</xpath>
+	    </field>
+	</record>
+  </odoo>

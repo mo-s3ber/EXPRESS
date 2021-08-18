@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report 
+            id="action_report_in_out_payment_cheques"
+            model="in.out.payment"
+            string="كشف الوارد اليـــومي"
+            report_type="qweb-pdf"
+            name="in_out_payment_cheques.in_out_payment_report_t"
+            file="in_out_payment_cheques.in_out_payment_report_t"
+            />
+    </data>
+</odoo>
