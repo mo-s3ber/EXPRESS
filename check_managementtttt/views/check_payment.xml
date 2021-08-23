@@ -22,6 +22,8 @@
                     <header>
                         <button name="action_confirm" string="Confirm" class="oe_highlight oe_read_only" states="draft"
                                 type="object"/>
+                        <button name="action_draft" string="Set to draft" class="oe_highlight oe_read_only" states="posted"
+                                type="object"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>

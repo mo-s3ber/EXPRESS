@@ -14,98 +14,41 @@ class ReportProductSale(models.AbstractModel):
         date_to = data['form']['date_to']
         vendor=data['form']['vendor']
         analytical_account_id=data['form']['analytical_account_id']
-         
-        total_sale = 0.0
-        period_value = ''
-        domain=[('type','=','in_invoice')]
+        domain=[('invoice_id.type','=','in_invoice'),("invoice_id.state", "not in", ("draft","cancel"))]
         if date_from:
-            domain.append(('date_invoice', '>=', date_from))
+            domain.append(('invoice_id.date_invoice', '>=', date_from))
         if date_to  :
-            domain.append(('date_invoice', '<=', date_to))
+            domain.append(('invoice_id.date_invoice', '<=', date_to))
         if vendor:
             domain.append(('partner_id', '=', vendor))
-
-         
+        if analytical_account_id:
+            domain.append(('account_analytic_id', '=', analytical_account_id))
         list = []
-        order_line=[]
-        invoice_ids = self.env['account.invoice'].search(domain,order='date_invoice asc')
-        old_timezone = pytz.timezone("UTC")
-        new_timezone = pytz.timezone("Africa/Cairo") 
-      
-        for inv in invoice_ids:
-                if inv.state!='cancel':
-                        date_so=''
-                        
-                        sale_order=self.env['purchase.order'].search([('name','=',inv.origin)])
-                        if sale_order:
-                            last_new_timezone = old_timezone.localize(sale_order.date_order).astimezone(new_timezone)
-                            last_new_timezone=last_new_timezone.strftime('%Y-%m-%d')
-                            date_so = last_new_timezone
+        invoice_lines_ids = self.env['account.invoice.line'].search(domain)
+        for line in invoice_lines_ids:
+            list.append({
+                'so_number': line.purchase_id.name if line.purchase_id else '',
+                'date_so': line.purchase_id.date_order,
+                'invoice_number': line.invoice_id.number,
+                'product_id': line.product_id.name,
+                'inv_name': line.invoice_id.name,
+                'date_in': line.invoice_id.date_invoice,
+                'partner': line.invoice_id.partner_id.name,
+                'quantity': line.quantity,
+                'price_unit': line.price_unit,
+                'total': line.price_total,
+                'note_invoice': line.name,
 
-                             
+            })
 
-                        for line in inv.invoice_line_ids:
-                                if  analytical_account_id:
-                                     if line.account_analytic_id.id == analytical_account_id:
-                                         list.append({
-                                            'so_number':inv.origin,
-                                            'date_so': date_so,
-                                            'invoice_number':line.invoice_id.number,
-                                            
-                                            'product_id':line.product_id.name,
-                                            'inv_name':line.invoice_id.name,
-                                            'date_in':line.invoice_id.date_invoice,
-                                            'partner' : line.invoice_id.partner_id.name,
-                                            'quantity':line.quantity,
-                                            'price_unit':line.price_unit,
-                                            'total':line.price_total,
-                                            'note_invoice':line.note_invoice
 
-                                        })
-                                else:
-                                    list.append({
-                                            'so_number':inv.origin,
-                                            'date_so': date_so,
-                                            'invoice_number':line.invoice_id.number,
-                                            
-                                            'product_id':line.product_id.name,
-                                            'inv_name':line.invoice_id.name,
-                                            'date_in':line.invoice_id.date_invoice,
-                                            'partner' : line.invoice_id.partner_id.name,
-                                            'quantity':line.quantity,
-                                            'price_unit':line.price_unit,
-                                            'total':line.price_total,
-                                            'note_invoice':line.note_invoice
-
-                                        })
-
-        if len(list)!=0:
-
-            return {
-                'doc_ids': data['ids'],
-                'doc_model': data['model'],
-                'period' : period_value,
-                'date_from': date_from,
-                'date_to': date_to,
-                'sale_orders' : list,
-                'total_sale' : total_sale,
-                'vendor_name':self.env['res.partner'].search([('id','=',vendor)]).name,
-                'data_check':False,
-                "analytical_account_id":self.env['account.analytic.account'].search([('id','=',analytical_account_id)]).name,
-                "name_report":'كشــف حســـاب مــــــورد'
-            }
-        else:
-            return {
-                'doc_ids': data['ids'],
-                'doc_model': data['model'],
-                'period' : period_value,
-                'date_from': date_from,
-                'date_to': date_to,
-                'sale_orders' : list,
-                'total_sale' : total_sale,
-                'vendor_name':self.env['res.partner'].search([('id','=',vendor)]).name,
-                "analytical_account_id":self.env['account.analytic.account'].search([('id','=',analytical_account_id)]).name,
-                'data_check':True,
-                "analytical_account_id":self.env['account.analytic.account'].search([('id','=',analytical_account_id)]).name,
-                "name_report":'كشــف حســـاب مــــــورد'
-            }
+        return {
+            'doc_ids': data['ids'],
+            'doc_model': data['model'],
+            'date_from': date_from,
+            'date_to': date_to,
+            'orders' : list,
+            'vendor_name':self.env['res.partner'].search([('id','=',vendor)]).name,
+            "analytical_account_id":self.env['account.analytic.account'].search([('id','=',analytical_account_id)]).name,
+            "name_report":'كشــف فواتير مــــــورد'
+        }

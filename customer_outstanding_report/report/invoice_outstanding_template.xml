@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="invoice_outstanding">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <t t-set="docs" t-value="docs.with_context()"/>
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <div align="center">
+                        <br/>
+                        <h2>Outstanding Credits</h2>
+                    </div>
+                    <br/>
+                    <table border="1" class="table table-condensed" style="border-style:solid">
+                        <tr style="height:30%">
+                            <td style="border: 1px solid black" align="center">From Date</td>
+                            <td style="border: 1px solid black" align="center">
+                                <span t-field="docs.start_date"/>
+                            </td>
+                            <td style="border: 1px solid black" align="center">To Date</td>
+                            <td style="border: 1px solid black" align="center">
+                                <span t-field="docs.end_date"/>
+                            </td>
+                        </tr>
+                    </table>
+                    <br/>
+                    <br/>
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+
+                                <th>Amount Due</th>
+                            </tr>
+                        </thead>
+                        <tbody class="sale_tbody">
+                            <t t-foreach="partners_dict" t-as="item">
+                                <tr t-if="item_value">
+                                    <td>
+                                        <span t-esc="item.name"/>
+                                    </td>
+                                    <td>
+                                        <table>
+                                            <tr t-foreach="item_value" t-as="line" style="border:0px">
+                                                <td style="border:0px">
+                                                    <span t-esc="line.move_id.name"/>
+                                                </td>
+                                                <td style="border:0px">
+                                                    <t t-set='residual' t-value='-1*line.amount_residual' />
+                                                    <span t-esc="residual"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <div>
+                        <strong>Total Outstanding Amount:
+                            <span t-field="docs.total_amount_due"/>
+                        </strong>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

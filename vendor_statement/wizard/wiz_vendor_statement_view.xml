@@ -8,7 +8,7 @@
 			<form>
 				  <sheet>
 					<div class="oe_title">
-						<h1>كشـــف حســــاب مـــورد</h1>
+						<h1>كشـــف فواتير مـــورد</h1>
 					</div>
 					<br/>
 				<group col="4">
@@ -16,7 +16,7 @@
 					<field name="date_to" />
 				</group>
 				<group>
-				   <field name="vendor"/>
+				   <field name="vendor" required="1"/>
 				   <field name="analytical_account_id"/>
 				</group>
 				 

@@ -4,7 +4,7 @@
         <report 
             id="action_report_customer_statement_t"
             model="customer.statement.t"
-            string="كشــف حســـاب عميل "
+            string="كشــف فواتير عميل "
             report_type="qweb-pdf"
             name="customer_statement_t.customer_statement_report_t"
             file="customer_statement_t.customer_statement_report_t"

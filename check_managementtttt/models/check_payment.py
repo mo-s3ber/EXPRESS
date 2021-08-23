@@ -127,6 +127,16 @@ class normal_payments(models.Model):
         return True
 
     @api.multi
+    def action_draft(self):
+        self.ensure_one()
+        self.state = "draft"
+        moves = self.env['account.move.line'].search([('jebal_con_pay_id','=',self.id)])
+        moves.move_id.unlink()
+        for check in self.pay_check_ids:
+            checks = self.env["check.management"].search([('check_id', '=', check.id)])
+            checks.unlink()
+
+    @api.multi
     def action_confirm(self):
         pay_amt = 0
         _logger.info("Confirm")
