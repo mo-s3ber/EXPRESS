@@ -44,7 +44,7 @@
 
     <menuitem id="menu_vendor_statement_report_invoice"
               name="كشـــف فواتير مـــورد"
-              action="vendor_statement.action_vendor_statment_view_wizard"
+              action="express_partner_statement.action_vendor_statment_view_wizard"
               parent="reports_express.menu_list_report"
               sequence="16"/>
 

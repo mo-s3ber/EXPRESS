@@ -130,7 +130,9 @@ class normal_payments(models.Model):
     def action_draft(self):
         self.ensure_one()
         self.state = "draft"
-        moves = self.env['account.move.line'].search([('jebal_con_pay_id','=',self.id)])
+        moves = self.env['account.move.line'].search([('jebal_con_pay_id','=',self.id)],limit=1)
+        if moves.move_id.state == 'posted':
+            moves.move_id.button_cancel()
         moves.move_id.unlink()
         for check in self.pay_check_ids:
             checks = self.env["check.management"].search([('check_id', '=', check.id)])

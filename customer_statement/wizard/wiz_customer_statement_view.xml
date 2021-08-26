@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="wiz_vendor_statement_view" model="ir.ui.view">
+    <record id="wiz_customer_statement_view" model="ir.ui.view">
         <field name="name">wiz_total_size_product_report_view</field>
-        <field name="model">vendor.statement</field>
+        <field name="model">customer.statement</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
                     <div class="oe_title">
-                        <h1>كشـــف فواتير مـــورد</h1>
+                        <h1>كشــف فواتير عميل</h1>
                     </div>
                     <br/>
                     <group col="4">
@@ -16,7 +16,7 @@
                         <field name="date_to"/>
                     </group>
                     <group>
-                        <field name="vendor" required="1"/>
+                        <field name="customer" required="1"/>
                         <field name="analytical_account_id"/>
                     </group>
 
@@ -31,21 +31,27 @@
         </field>
     </record>
 
-    <record id="action_vendor_statment_view_wizard" model="ir.actions.act_window">
-        <field name="name">كشــف فواتير مــورد</field>
-        <field name="res_model">vendor.statement</field>
+    <record id="action_customer_statment_view_wizard" model="ir.actions.act_window">
+        <field name="name">كشــف فواتير عميل</field>
+        <field name="res_model">customer.statement</field>
         <field name="type">ir.actions.act_window</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>
-        <field name="view_id" ref="wiz_vendor_statement_view"/>
+        <field name="view_id" ref="wiz_customer_statement_view"/>
         <!--<field name="target">new</field>-->
         <field name="target">inline</field>
     </record>
 
-    <menuitem id="menu_vendor_statement_report_invoice"
-              name="كشـــف فواتير مـــورد"
-              action="vendor_statement.action_vendor_statment_view_wizard"
+    <menuitem id="sale_menu_customer_statement_report"
+              name="كشـــف فواتير عميـل"
+              action="action_customer_statment_view_wizard"
+              parent="sale.menu_sale_report"
+              sequence="1"/>
+
+     <menuitem id="menu_customer_statement_report_invoice"
+              name="كشـــف فواتير عميل"
+              action="customer_statement.action_customer_statment_view_wizard"
               parent="reports_express.menu_list_report"
-              sequence="16"/>
+              sequence="17"/>
 
 </odoo>

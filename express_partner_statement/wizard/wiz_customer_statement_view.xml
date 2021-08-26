@@ -32,7 +32,7 @@
     </record>
 
     <record id="action_customer_statment_view_wizard" model="ir.actions.act_window">
-        <field name="name">كشــف حســاب عميل</field>
+        <field name="name">كشــف فواتير عميل</field>
         <field name="res_model">customer.statement</field>
         <field name="type">ir.actions.act_window</field>
         <field name="view_type">form</field>
@@ -42,10 +42,16 @@
         <field name="target">inline</field>
     </record>
 
-    <menuitem id="menu_customer_statement_report"
+    <menuitem id="sale_menu_customer_statement_report"
               name="كشـــف فواتير عميـل"
               action="action_customer_statment_view_wizard"
               parent="sale.menu_sale_report"
               sequence="1"/>
+
+     <menuitem id="menu_customer_statement_report_invoice"
+              name="كشـــف فواتير عميل"
+              action="action_customer_statment_view_wizard"
+              parent="reports_express.menu_list_report"
+              sequence="17"/>
 
 </odoo>

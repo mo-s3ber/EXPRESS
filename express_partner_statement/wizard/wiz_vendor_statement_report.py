@@ -26,4 +26,4 @@ class PeriodicalReportProduct(models.TransientModel):
 
             },
         }
-        return self.env.ref('vendor_statement.action_report_vendor_inv_statement').report_action(self, data=data)
+        return self.env.ref('express_partner_statement.action_report_vendor_inv_statement').report_action(self, data=data)

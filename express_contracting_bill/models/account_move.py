@@ -33,8 +33,6 @@ class AccountMove(models.Model):
             if rec.date and rec.date_to:
                 if rec.date_to < rec.date:
                     raise ValidationError(_('"Date To" time cannot be earlier than "Date From" time.'))
-            else:
-                raise ValidationError(_('"Please insert Date from and Date to'))
 
 
 class AccountMoveLine(models.Model):
@@ -44,7 +42,6 @@ class AccountMoveLine(models.Model):
     previous_qty = fields.Float(string='Previous QTY', digits=dp.get_precision('Product Unit of Measure'))
     percentage = fields.Float('Percentage(%)')
     price_unit = fields.Float(string='Price', digits=dp.get_precision('Product Unit of Measure'))
-
 
     @api.onchange('account_id')
     def onchange_account_id(self):
@@ -67,7 +64,7 @@ class AccountMoveLine(models.Model):
 
     @api.onchange('quantity', 'percentage', 'price_unit')
     def onchange_amount(self):
-        if self.move_id.is_contracting_bill:
+        if self.move_id.is_contracting_bill and self.quantity > 0.0 and self.percentage > 0.0 and self.price_unit > 0.0:
             self.debit = self.quantity * (self.percentage / 100) * self.price_unit
             self.credit = 0.0
 

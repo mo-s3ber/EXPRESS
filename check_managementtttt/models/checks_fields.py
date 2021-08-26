@@ -11,6 +11,7 @@ class check_management(models.Model):
     _name = 'check.management'
     _description = 'Check'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _rec_name = 'check_number'
 
     check_number = fields.Char(string=_("Check Number"),required=True,default="0")
     check_date = fields.Date(string=_("Check Date"),required=True)

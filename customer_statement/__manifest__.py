@@ -35,11 +35,11 @@ This module print daily, last week and last month sale report.
 Also print report for particular duration.
     """,
     "license": "AGPL-3",
-    'depends' : ['base_setup', 'sale_management','account'],
+    'depends' : ['base_setup', 'sale_management','account','reports_express'],
     'data': [
-        'wizard/wiz_cuatomer_statement_view.xml',
-        'views/customer_statement_view.xml',
-        'views/report_customer_statment.xml'
+        'views/report_customer_statement_view.xml',
+        'views/customer_statement_action.xml',
+        'wizard/wiz_customer_statement_view.xml',
     ],
     
     'installable': True,

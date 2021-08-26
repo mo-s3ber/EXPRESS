@@ -2,9 +2,9 @@
 <odoo>
     <data>
         <report 
-            id="action_report_vendor_statement"
+            id="action_report_vendor_inv_statement"
             model="vendor.statement"
-            string="كشــف حســـاب مــورد "
+            string="كشــف فواتير مــورد "
             report_type="qweb-pdf"
             name="vendor_statement.vendor_statement_report"
             file="vendor_statement.vendor_statement_report"

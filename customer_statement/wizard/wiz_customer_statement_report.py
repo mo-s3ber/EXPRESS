@@ -45,4 +45,4 @@ class PeriodicalReportProduct(models.TransientModel):
 
             },
         }
-        return self.env.ref('customer_statement.action_report_customer_statement').report_action(self, data=data)
+        return self.env.ref('customer_statement.action_report_customer_inv_statement').report_action(self, data=data)

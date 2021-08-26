@@ -21,29 +21,5 @@
 #
 ###############################################################################
 
-{
-    'name' : 'Vendor Statement',
-    'version' : '12.0.1',
-    'summary': 'Module all vendor Statement .',
-    'sequence': 16,
-    'category': 'Account',
-    'author' : 'BBl',
-    'description': """
-Custom Sales Report
-=====================================
-This module print daily, last week and last month sale report.
-Also print report for particular duration.
-    """,
-    "license": "AGPL-3",
-    'depends' : ['base_setup', 'sale_management','account','reports_express'],
-    'data': [
-        'views/report_vendor_statement_view.xml',
-        'views/vendor_statement_action.xml',
-        'wizard/wiz_vendor_statement_view.xml',
-
-    ],
-    
-    'installable': True,
-    'application': True,
-    'auto_install': False,
-}
+from . import report
+from . import wizard

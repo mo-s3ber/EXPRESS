@@ -2,12 +2,12 @@
 <odoo>
     <data>
         <report 
-            id="action_report_customer_statement"
+            id="action_report_customer_inv_statement"
             model="customer.statement"
             string="كشــف فواتير عميل "
             report_type="qweb-pdf"
-            name="customer_statement.customer_statement_report"
-            file="customer_statement.customer_statement_report"
+            name="express_partner_statement.customer_statement_report"
+            file="express_partner_statement.customer_statement_report"
             />
     </data>
 </odoo>

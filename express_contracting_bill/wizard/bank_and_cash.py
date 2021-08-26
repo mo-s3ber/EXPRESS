@@ -45,8 +45,8 @@ class BankCashWizard(models.TransientModel):
 
     date_from = fields.Date()
     date_to = fields.Date()
-    journal_ids = fields.Many2many(
-        comodel_name="account.journal",
+    journal_id = fields.Many2one(
+        comodel_name="account.journal",domain="[('type','in',('cash','bank'))]"
     )
     total = fields.Boolean()
     excel_sheet = fields.Binary('Download Report')
@@ -58,28 +58,18 @@ class BankCashWizard(models.TransientModel):
                 if rec.date_to < rec.date_from:
                     raise ValidationError(_('"Date To" time cannot be earlier than "Date From" time.'))
 
-    def generate_data(self, account):
-        domain = []
-        if self.journal_ids:
-            domain.append(('journal_id', 'in', [x.id for x in self.journal_ids]))
-        if self.date_from:
-            domain.append(('date', '>=', self.date_from))
-        if self.date_to:
-            domain.append(('date', '<=', self.date_to))
-        domain.append(('move_id.state', '=', 'posted'))
-        domain.append(('account_id', '=', account.id))
-        moves = self.env['account.move.line'].search(domain)
-
-        return moves
-
     @api.multi
     def get_all_move(self):
-        if self.total:
-            sql = "SELECT move.account_id as account,SUM(move.debit) AS debit,SUM(move.credit) AS credit from account_move_line move LEFT JOIN account_move a ON (move.move_id=a.id) LEFT JOIN account_account account ON (move.account_id=account.id) JOIN account_journal jor ON (move.journal_id=jor.id) WHERE jor.id IN %s AND a.date >= %s AND a.date <= %s AND a.state = 'posted' GROUP BY account;"
-            self.env.cr.execute(sql,(tuple(self.journal_ids.ids),self.date_from,self.date_to))
+        if self.journal_id:
+            accounts = tuple([self.journal_id.default_debit_account_id.id])
         else:
-            sql = "SELECT move.date AS date,move.name AS label,account.name AS acc_name,move.debit AS debit,move.credit AS credit from account_move_line move LEFT JOIN account_move a ON (move.move_id=a.id) LEFT JOIN account_account account ON (move.account_id=account.id) JOIN account_journal jor ON (move.journal_id=jor.id) WHERE jor.id IN %s AND a.date >= %s AND a.date <= %s AND a.state = 'posted';"
-            self.env.cr.execute(sql,(tuple(self.journal_ids.ids),self.date_from,self.date_to))
+            journals = self.env['account.journal'].search([('type','in',('cash','bank'))])
+            accounts = tuple([x.default_debit_account_id.id for x in journals if x.default_debit_account_id.id])
+        if self.total:
+            sql = "SELECT move.account_id as account,SUM(move.debit) AS debit,SUM(move.credit) AS credit from account_move_line move LEFT JOIN account_move a ON (move.move_id=a.id) LEFT JOIN account_account account ON (move.account_id=account.id) JOIN account_journal jor ON (move.journal_id=jor.id) WHERE account.id IN %s AND a.date >= %s AND a.date <= %s AND a.state = 'posted' GROUP BY account;"
+        else:
+            sql = "SELECT move.date AS date,move.name AS label,a.name AS aj,a.ref AS ref,account.name AS acc_name,move.debit AS debit,move.credit AS credit from account_move_line move LEFT JOIN account_move a ON (move.move_id=a.id) LEFT JOIN account_account account ON (move.account_id=account.id) JOIN account_journal jor ON (move.journal_id=jor.id) WHERE account.id IN %s AND a.date >= %s AND a.date <= %s AND a.state = 'posted' ORDER BY date;"
+        self.env.cr.execute(sql,(accounts,self.date_from,self.date_to))
         res_all = self.env.cr.fetchall()
         return res_all
 
@@ -112,8 +102,10 @@ class BankCashWizard(models.TransientModel):
         worksheet = workbook.add_worksheet('Bank and Cash')
         worksheet.set_paper(9)
         worksheet.set_portrait()
-        worksheet.merge_range(0, 0, 1, 4, 'تقرير أجمالي خزينة او بنك', table_header_format)
+        worksheet.set_column('A:W', 15)
+        worksheet.merge_range(0, 0, 1, 4, 'كشف حساب خزينة/بنك', table_header_format)
         if self.date_from and self.date_to:
+            worksheet.write(2, 0, str(self.journal_id.name if self.journal_id.name else 'الكل'), table_header_format)
             worksheet.write(2, 1, 'من', table_header_format)
             worksheet.write(2, 2, str(self.date_from), table_header_format)
             worksheet.write(2, 3, 'الي', table_header_format)
@@ -125,22 +117,28 @@ class BankCashWizard(models.TransientModel):
             worksheet.write(row, 2, 'أسم الحساب', table_header_format)
             worksheet.write(row, 3, 'مدين', table_header_format)
             worksheet.write(row, 4, 'داين', table_header_format)
+            worksheet.write(row, 5, 'الرصيد', table_header_format)
             row += 1
             col = 0
             debit = 0.0
             credit = 0.0
+            balance =0.0
             for acc in self.get_all_move():
                 worksheet.write(row, col, str(acc[0]), custom_format)
-                worksheet.write(row, col + 1, str(acc[1]), custom_format)
-                worksheet.write(row, col + 2, str(acc[2]), custom_format)
-                worksheet.write(row, col + 3, round(acc[3], 2), custom_format)
-                debit += round(acc[3], 2)
-                worksheet.write(row, col + 4, round(acc[4], 2), custom_format)
-                credit += round(acc[4], 2)
+                worksheet.write(row, col + 1, str(acc[1] or '')+'-'+str(acc[2] or '')+'-'+str(acc[3] or ''), custom_format)
+                worksheet.write(row, col + 2, str(acc[4]), custom_format)
+                worksheet.write(row, col + 3, round(acc[5], 2), custom_format)
+                debit += round(acc[5], 2)
+                worksheet.write(row, col + 4, round(acc[6], 2), custom_format)
+                credit += round(acc[6], 2)
+                balance += round(acc[5], 2) - round(acc[6], 2)
+                worksheet.write(row, col + 5, round(acc[5], 2) - round(acc[6], 2), custom_format)
                 row += 1
+
             worksheet.write(row, col + 2, 'الاجمالي', custom_format)
             worksheet.write(row, col + 3, debit, custom_format)
             worksheet.write(row, col + 4, credit, custom_format)
+            worksheet.write(row, col + 5, balance, custom_format)
         else:
             worksheet.write(row, 0, 'كود الحساب', table_header_format)
             worksheet.write(row, 1, 'أسم الحساب', table_header_format)
