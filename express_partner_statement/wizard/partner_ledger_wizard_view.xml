@@ -8,20 +8,21 @@
             <form>
                 <sheet>
                     <div class="oe_title">
-                        <h1> كشــف حساب عميل</h1>
+                        <h1>كشــف حساب عميل</h1>
                         <field name="type" invisible="1"/>
                     </div>
                     <br/>
-                    <group col="4">
-                        <field name="date_from" required="1"/>
-                        <field name="date_to" required="1"/>
-                    </group>
                     <group>
-                        <field name="partner_id" string="عميل" domain="[('customer', '=', True)]"/>
-                        <field name="analytical_account_id"/>
-                        <field name="state" widget="radio"/>
+                        <group>
+                            <field name="date_from" required="1"/>
+                            <field name="state" widget="radio"/>
+                        </group>
+                        <group>
+                            <field name="date_to" required="1"/>
+                            <field name="partner_id" string="عميل" domain="[('customer', '=', True)]"/>
+                            <field name="analytical_account_id"/>
+                        </group>
                     </group>
-
                     <footer>
                         <button name="generate_report" string="Print" type="object" default_focus="1"
                                 class="oe_highlight"/>
@@ -41,19 +42,20 @@
                 <sheet>
                     <div class="oe_title">
                         <h1>كشــف حساب مورد</h1>
-                         <field name="type" invisible="1"/>
+                        <field name="type" invisible="1"/>
                     </div>
                     <br/>
-                    <group col="4">
-                        <field name="date_from" required="1"/>
-                        <field name="date_to" required="1"/>
-                    </group>
                     <group>
-                        <field name="partner_id" string="مورد" domain="[('supplier', '=', True)]"/>
-                        <field name="analytical_account_id"/>
-                        <field name="state" widget="radio"/>
+                        <group>
+                            <field name="date_from" required="1"/>
+                            <field name="state" widget="radio"/>
+                        </group>
+                        <group>
+                            <field name="date_to" required="1"/>
+                            <field name="partner_id" string="مورد" domain="[('supplier', '=', True)]"/>
+                            <field name="analytical_account_id"/>
+                        </group>
                     </group>
-
                     <footer>
                         <button name="generate_report" string="Print" type="object" default_focus="1"
                                 class="oe_highlight"/>
