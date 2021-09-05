@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="partner_ledger_total_customer_wizard_view" model="ir.ui.view">
+        <field name="name">كشف ارصدة عملاء</field>
+        <field name="model">partner.ledger.total.report</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>كشــف أرصدة عملاء</h1>
+                        <field name="type" invisible="1"/>
+                    </div>
+                    <br/>
+                    <group>
+                        <group>
+                            <field name="date_from" required="1"/>
+                            <field name="state" widget="radio"/>
+                        </group>
+                        <group>
+                            <field name="date_to" required="1"/>
+                            <field name="partner_id" string="عميل" domain="[('customer', '=', True)]"/>
+                            <field name="analytical_account_id"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="generate_report" string="Print" type="object" default_focus="1"
+                                class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="partner_ledger_total_vendor_wizard_view" model="ir.ui.view">
+        <field name="name">كشف أرصدة موردين</field>
+        <field name="model">partner.ledger.total.report</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>كشــف أرصدة موردين</h1>
+                        <field name="type" invisible="1"/>
+                    </div>
+                    <br/>
+                    <group>
+                        <group>
+                            <field name="date_from" required="1"/>
+                            <field name="state" widget="radio"/>
+                        </group>
+                        <group>
+                            <field name="date_to" required="1"/>
+                            <field name="partner_id" string="مورد" domain="[('supplier', '=', True)]"/>
+                            <field name="analytical_account_id"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="generate_report" string="Print" type="object" default_focus="1"
+                                class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_partner_ledger_total_customer_wizard" model="ir.actions.act_window">
+        <field name="name">كشــف أرصدة عملاء</field>
+        <field name="res_model">partner.ledger.total.report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="partner_ledger_total_customer_wizard_view"/>
+        <field name="context">{'default_type':'customer'}</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_partner_ledger_total_vendor_wizard" model="ir.actions.act_window">
+        <field name="name">كشــف أرصدة موردين</field>
+        <field name="res_model">partner.ledger.total.report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'default_type':'vendor'}</field>
+        <field name="view_id" ref="partner_ledger_total_vendor_wizard_view"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_action_partner_ledger_total_vendor_wizard"
+              name="كشـــف ارصدة موردين"
+              action="action_partner_ledger_total_vendor_wizard"
+              parent="reports_express.menu_list_report"
+              sequence="20"/>
+
+    <menuitem id="menu_action_partner_ledger_total_customer_wizard"
+              name="كشـــف ارصدة عملاء"
+              action="action_partner_ledger_total_customer_wizard"
+              parent="reports_express.menu_list_report"
+              sequence="21"/>
+
+</odoo>

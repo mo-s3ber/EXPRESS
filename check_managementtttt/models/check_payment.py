@@ -141,20 +141,20 @@ class normal_payments(models.Model):
     @api.multi
     def action_confirm(self):
         pay_amt = 0
-        _logger.info("Confirm")
         if self.payment_subtype:
             pay_amt = self.amount
         else:
             pay_amt = self.amount1
+        details = str(self.pay_check_ids[0].check_date) +'/'+str(self.pay_check_ids[0].check_number)+'/'+str(self.pay_check_ids[0].bank.name)
         move = {
-            "name": "Parnter Payment " + "Receipt:" + self.receipt_number if self.receipt_number else '',
+            "name": self.name,
             "journal_id": self.payment_method.id,
-            "ref": self.receipt_number,
+            "ref": self.name,
             "company_id": self.user_id.company_id.id,
             "cheque": True,
         }
         move_line = {
-            "name": "Parnter Payment " + "Receipt:" + self.receipt_number if self.receipt_number else '',
+            "name": details if self.pay_check_ids else '',
             "partner_id": self.partner_id.id,
             "ref": self.receipt_number,
             "jebal_con_pay_id": self.id,

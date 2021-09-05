@@ -47,7 +47,6 @@ class create_moves(models.Model):
         }
 
         move = self.env['account.move'].with_context(check_move_validity=False).create(move_vals)
-        _logger.info('Move line')
         for index in kwargs['debit_account']:
             debit_line_vals = {
                 'name': kwargs['move_line']['name'],
@@ -62,8 +61,6 @@ class create_moves(models.Model):
             }
             if 'analyitc_id' in index:
                 debit_line_vals['analytic_account_id'] = index['analyitc_id']
-                print('hellloooo')
-                print(str(index['analyitc_id']))
             if 'jebal_pay_id' in kwargs['move_line']:
                 debit_line_vals['jebal_pay_id'] =  kwargs['move_line']['jebal_pay_id']
             if 'jebal_check_id' in  kwargs['move_line']:
@@ -74,8 +71,6 @@ class create_moves(models.Model):
                 debit_line_vals['jebal_con_pay_id'] = kwargs['move_line']['jebal_con_pay_id']
             debit_line_vals['move_id'] = move.id
             debit_line_vals['cheques']=True
-
-            _logger.info('Debit')
             aml_obj.create(debit_line_vals)
 
         for index in kwargs['credit_account']:
@@ -90,8 +85,6 @@ class create_moves(models.Model):
             }
             if 'analyitc_id' in index:
                 credit_line_vals['analytic_account_id'] = index['analyitc_id']
-                print('hellloooo')
-                print(str(index['analyitc_id']))
             if 'jebal_pay_id' in kwargs['move_line']:
                 credit_line_vals['jebal_pay_id'] =  kwargs['move_line']['jebal_pay_id']
             if 'jebal_check_id' in  kwargs['move_line']:
@@ -101,7 +94,7 @@ class create_moves(models.Model):
             credit_line_vals['move_id'] = move.id
             credit_line_vals['cheques']=True
             aml_obj.create(credit_line_vals)
-        # move.post()
+        move.post()
 
     def adjust_move_percentage(self,**kwargs):
         # Debit
