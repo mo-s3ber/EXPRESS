@@ -37,7 +37,6 @@ class create_moves(models.Model):
             date=datetime.today())._compute_amount_fields(kwargs['amount'], kwargs['src_currency'],
                                                          company_currency)
         move_vals = {
-            'name': kwargs['move']['name'],
             'journal_id': kwargs['move']['journal_id'],
             'date': datetime.today(),
             'ref': kwargs['move']['ref'],
