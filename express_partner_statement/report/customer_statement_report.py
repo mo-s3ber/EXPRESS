@@ -28,7 +28,7 @@ class ReportProductSale(models.AbstractModel):
             domain.append(("partner_id", "=", customer))
 
         orders = []
-        invoice_ids = self.env["account.invoice"].search(domain,order='date_invoice desc')
+        invoice_ids = self.env["account.invoice"].search(domain,order='date_invoice asc')
         for inv in invoice_ids:
             sale_order = self.env["sale.order"].search([("name", "=", inv.origin)])
             invoice_line_ids = inv.invoice_line_ids.filtered(lambda x: x.account_analytic_id == analytical_account_id) if analytical_account_id else inv.invoice_line_ids

@@ -26,7 +26,7 @@ class ReportProductSale(models.AbstractModel):
         if analytical_account_id:
             domain.append(('account_analytic_id', '=', analytical_account_id))
         list = []
-        invoice_lines_ids = self.env['account.invoice.line'].search(domain, order='id desc')
+        invoice_lines_ids = self.env['account.invoice.line'].search(domain, order='id asc')
         for line in invoice_lines_ids:
             list.append({
                 'so_number': line.purchase_id.name if line.purchase_id else '',
