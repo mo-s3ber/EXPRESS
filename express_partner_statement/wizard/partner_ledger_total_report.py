@@ -87,11 +87,11 @@ class PartnerLedgerTotal(models.TransientModel):
             domain.append(('move_id.state', '=', self.state))
         lines = self.env['account.move.line'].search(domain, order='date desc')
         for line in lines:
-            if line in result.keys():
+            if line.account_id not in result.keys():
+                result[line.account_id] = {'debit': line.debit, 'credit': line.credit}
+            else:
                 result[line.account_id]['debit'] += line.debit
                 result[line.account_id]['credit'] += line.credit
-            else:
-                result[line.account_id] = {'debit': line.debit, 'credit': line.credit}
         return result
 
     @api.multi
