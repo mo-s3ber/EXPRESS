@@ -77,9 +77,7 @@ class PartnerLedger(models.TransientModel):
     def get_all_move(self,partner):
         domain = [('account_id', 'in', (partner.property_account_receivable_id.id,partner.property_account_payable_id.id)),
                   ('partner_id', '=', partner.id), ('date', '>=', self.date_from),
-                  ('date', '<=', self.date_to),
-                  ('reconciled', '=', False), '|', ('amount_residual', '!=', 0.0),
-                  ('amount_residual_currency', '!=', 0.0)]
+                  ('date', '<=', self.date_to),('company_id', '=', self.env.user.company_id.id)]
         if self.analytical_account_id:
             domain.append(('analytic_account_id', '=', self.analytical_account_id.id))
         if self.state != 'all':

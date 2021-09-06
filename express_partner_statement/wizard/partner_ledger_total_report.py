@@ -48,8 +48,9 @@ class PartnerLedgerTotal(models.TransientModel):
     date_to = fields.Date(string='تاريخ الانتهاء')
     partner_id = fields.Many2one('res.partner')
     analytical_account_id = fields.Many2one('account.analytic.account', string="الحساب التحليلي")
-    type = fields.Selection([('customer','عميل'),('vendor','مورد')])
-    state = fields.Selection([('draft', 'غير مرحل'), ('posted', 'مرحل'),('all', 'الكل')],string='الحالة' ,default='posted')
+    type = fields.Selection([('customer', 'عميل'), ('vendor', 'مورد')])
+    state = fields.Selection([('draft', 'غير مرحل'), ('posted', 'مرحل'), ('all', 'الكل')], string='الحالة',
+                             default='posted')
     excel_sheet = fields.Binary('Download Report')
 
     @api.constrains('date_from', 'date_to')
@@ -59,34 +60,39 @@ class PartnerLedgerTotal(models.TransientModel):
                 if rec.date_to < rec.date_from:
                     raise ValidationError(_('"Date To" time cannot be earlier than "Date From" time.'))
 
-
     def get_partner(self):
         if self.type == 'customer':
             if self.partner_id:
                 partners = [self.partner_id]
             else:
-                partners = self.env['res.partner'].search([('customer', '=', True)],order='name')
+                partners = self.env['res.partner'].search([('customer', '=', True)], order='name')
         else:
             if self.partner_id:
                 partners = [self.partner_id]
             else:
-                partners = self.env['res.partner'].search([('supplier', '=', True)],order='name')
+                partners = self.env['res.partner'].search([('supplier', '=', True)], order='name')
         return partners
 
     @api.multi
-    def get_all_move(self,partner):
-        domain = [('account_id', 'in', (partner.property_account_receivable_id.id,partner.property_account_payable_id.id)),
-                  ('partner_id', '=', partner.id), ('date', '>=', self.date_from),
-                  ('date', '<=', self.date_to),
-                  ('reconciled', '=', False), '|', ('amount_residual', '!=', 0.0),
-                  ('amount_residual_currency', '!=', 0.0)]
+    def get_all_move(self, partner):
+        result = {}
+        domain = [
+            ('account_id', 'in', (partner.property_account_receivable_id.id, partner.property_account_payable_id.id)),
+            ('partner_id', '=', partner.id), ('company_id', '=', self.env.user.company_id.id),
+            ('date', '>=', self.date_from),
+            ('date', '<=', self.date_to)]
         if self.analytical_account_id:
             domain.append(('analytic_account_id', '=', self.analytical_account_id.id))
         if self.state != 'all':
             domain.append(('move_id.state', '=', self.state))
-
-        lines = self.env['account.move.line'].read_group(domain, fields=['account_id'], groupby=['account_id'], lazy=False)
-        return lines
+        lines = self.env['account.move.line'].search(domain, order='date desc')
+        for line in lines:
+            if line in result.keys():
+                result[line.account_id]['debit'] += line.debit
+                result[line.account_id]['credit'] += line.credit
+            else:
+                result[line.account_id] = {'debit': line.debit, 'credit': line.credit}
+        return result
 
     @api.multi
     def generate_report(self):
@@ -135,27 +141,24 @@ class PartnerLedgerTotal(models.TransientModel):
             worksheet.write(2, 3, 'الي', table_header_format)
             worksheet.write(2, 4, str(self.date_to), table_header_format)
         row = 3
-        worksheet.write(row, 0, 'التاريخ', table_header_format)
-        worksheet.write(row, 1, 'أسم الحساب', table_header_format)
-        worksheet.write(row, 2, 'مدين', table_header_format)
-        worksheet.write(row, 3, 'داين', table_header_format)
-        worksheet.write(row, 4, 'الرصيد', table_header_format)
+        worksheet.write(row, 0, 'أسم الحساب', table_header_format)
+        worksheet.write(row, 1, 'مدين', table_header_format)
+        worksheet.write(row, 2, 'داين', table_header_format)
+        worksheet.write(row, 3, 'الرصيد', table_header_format)
         row += 1
         for partner in self.get_partner():
             if self.get_all_move(partner):
                 col = 0
-                worksheet.write(row, 0, str(''), partner_format)
-                worksheet.write(row, 1, str(partner.name), partner_format)
+                worksheet.write(row, 0, str(partner.name), partner_format)
+                worksheet.write(row, 1, str(''), partner_format)
                 worksheet.write(row, 2, str(''), partner_format)
                 worksheet.write(row, 3, str(''), partner_format)
-                worksheet.write(row, 4, str(''), partner_format)
                 row += 1
-                for value in self.get_all_move(partner):
-                    worksheet.write(row, col, str(value.date), custom_format)
-                    worksheet.write(row, col + 1, str(value.account_id.name), custom_format)
-                    worksheet.write(row, col + 2, round(value.debit, 2), custom_format)
-                    worksheet.write(row, col + 3, round(value.credit, 2), custom_format)
-                    worksheet.write(row, col + 4,round(value.debit, 2) - round(value.credit, 2), custom_format)
+                for key,value in self.get_all_move(partner).items():
+                    worksheet.write(row, col + 0, str(key.name), custom_format)
+                    worksheet.write(row, col + 1, round(value['debit'], 2), custom_format)
+                    worksheet.write(row, col + 2, round(value['credit'], 2), custom_format)
+                    worksheet.write(row, col + 3, round(value['debit'], 2) - round(value['credit'], 2), custom_format)
                     row += 1
 
         workbook.close()
@@ -169,6 +172,3 @@ class PartnerLedgerTotal(models.TransientModel):
                 self.id),
             'target': 'self'
         }
-
-
-
