@@ -132,11 +132,11 @@ class normal_payments(models.Model):
         self.state = "draft"
         moves = self.env['account.move.line'].search([('jebal_con_pay_id','=',self.id)],limit=1)
         if moves.move_id.state == 'posted':
-            moves.move_id.button_cancel()
-        moves.move_id.unlink()
+            moves.move_id.sudo().button_cancel()
+        moves.move_id.sudo().unlink()
         for check in self.pay_check_ids:
             checks = self.env["check.management"].search([('check_id', '=', check.id)])
-            checks.unlink()
+            checks.sudo().unlink()
 
     @api.multi
     def action_confirm(self):
