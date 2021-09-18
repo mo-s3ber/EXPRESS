@@ -3,3 +3,4 @@ access_vendor_statement,access.vendor.statement,model_vendor_statement,base_grou
 access_customer_statement,access.customer.statement,model_customer_statement,base_group_user,1,1,1,1
 access_partner_ledger_report,access.partner.ledger.report,model_partner_ledger_report,base_group_user,1,1,1,1
 access_partner_ledger_total_report,access.partner.ledger.total.report,model_partner_ledger_total_report,base_group_user,1,1,1,1
+access_partner_statement_t_report,access.partner.statement.t.report,model_partner_statement_t_report,base_group_user,1,1,1,1

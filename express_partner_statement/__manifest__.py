@@ -30,6 +30,7 @@ This module print Module accounting reports for customer/vendor Statement.
         'wizard/wiz_customer_statement_view.xml',
         'wizard/partner_ledger_wizard_view.xml',
         'wizard/partner_ledger_total_wizard_view.xml',
+        'wizard/partner_statement_t_view.xml',
 
     ],
 

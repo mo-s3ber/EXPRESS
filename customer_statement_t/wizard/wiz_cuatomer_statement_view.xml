@@ -41,10 +41,10 @@
 		<field name="target">inline</field>
 	</record>
 
-	 <!--<menuitem id="menu_customer_statement_report"
+	 <menuitem id="menu_customer_statement_t_report"
                   name="كشـــف حســــاب عميـل"
-                  action="action_customer_statment_view_wizard"
-                  parent="sale.menu_sale_report"
-                  sequence="1"/>-->
+                  action="action_customer_statment_view_wizard_t"
+                  parent="reports_express.menu_list_report"
+                  sequence="99"/>
 
 </odoo>

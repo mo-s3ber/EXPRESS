@@ -17,11 +17,21 @@ class move_lines(models.Model):
     date_maturity = fields.Date(string='Due date', index=True, required=False,
                                 help="This field is used for payable and receivable journal entries. You can put the limit date for the payment of this line.")
     cheques=fields.Boolean('cheques')
-    @api.model
-    def create(self,vals):
-        res = super(move_lines,self).create(vals)
-        res.date_maturity = False
-        return res
+
+    # @api.model
+    # def create(self,vals):
+    #     res = super(move_lines,self).create(vals)
+    #     res.date_maturity = False
+    #     return res
+
+    def compute_check_details(self):
+        for rec in self:
+            if rec.cheques:
+                check = self.env['normal.payments'].search([('id','=',rec.jebal_con_pay_id)],limit=1)
+                if check:
+                    details = str(check.pay_check_ids[0].check_date) + '/' + str(
+                        check.pay_check_ids[0].check_number) + '/' + str(check.pay_check_ids[0].bank.name)
+                    rec.write({'name':details})
 
 
 class create_moves(models.Model):
