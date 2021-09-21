@@ -46,7 +46,7 @@ class PartnerStatement(models.TransientModel):
 
     date_from = fields.Date(string='تاريخ البدء')
     date_to = fields.Date(string='تاريخ الانتهاء')
-    partner_id = fields.Many2one('res.partner')
+    partner_id = fields.Many2one('res.partner',required=1)
     analytical_account_id = fields.Many2one('account.analytic.account', string="الحساب التحليلي")
     type = fields.Selection([('customer', 'عميل'), ('vendor', 'مورد')])
     state = fields.Selection([('draft', 'غير مرحل'), ('posted', 'مرحل'), ('all', 'الكل')], string='الحالة',
@@ -170,7 +170,7 @@ class PartnerStatement(models.TransientModel):
                     if value.invoice_id.invoice_line_ids:
                         for inv in value.invoice_id.invoice_line_ids:
                             qty_total += inv.quantity
-                            price_total += inv.price_subtotal
+                            price_total += inv.price_total
                             worksheet.write(row, col, str(value.date), custom_format)
                             worksheet.write(row, col + 1, str(inv.invoice_id.origin),
                                             custom_format)
@@ -178,7 +178,7 @@ class PartnerStatement(models.TransientModel):
                             worksheet.write(row, col + 3, str(inv.product_id.name or ''), custom_format)
                             worksheet.write(row, col + 4, round(inv.quantity, 2), custom_format)
                             worksheet.write(row, col + 5, round(inv.price_unit, 2), custom_format)
-                            worksheet.write(row, col + 6, round(inv.price_subtotal, 2), custom_format)
+                            worksheet.write(row, col + 6, round(inv.price_total, 2), custom_format)
                             worksheet.write(row, col + 7, str(inv.note_invoice or ''), custom_format)
                             row += 1
                     else:
@@ -204,23 +204,22 @@ class PartnerStatement(models.TransientModel):
                 worksheet.write(row, col + 7, '', table_header_format)
                 row += 1
                 total_credit = 0.0
-                worksheet.write(row, 0, 'التاريخ', table_header_format)
-                worksheet.write(row, 1, 'الاذن', table_header_format)
-                worksheet.write(row, 2, 'الشيك/تاريخ الاستحقاق', table_header_format)
-                worksheet.write(row, 3, 'المبلغ', table_header_format)
+                row = 4
+                worksheet.write(row, 9, 'التاريخ', table_header_format)
+                worksheet.write(row, 10, 'البيان', table_header_format)
+                worksheet.write(row, 11, 'المبلغ', table_header_format)
                 row += 1
+                col = 9
                 for value in self.get_all_move(partner).filtered(lambda x: x.credit > 0.0):
                     total_credit += value.credit
                     worksheet.write(row, col, str(value.date), custom_format)
                     worksheet.write(row, col + 1, str(value.move_id.name or '') + '-' + str(value.name or ''),
                                     custom_format)
-                    worksheet.write(row, col + 2, str(value.name or ''), custom_format)
-                    worksheet.write(row, col + 3, round(value.credit, 2), custom_format)
+                    worksheet.write(row, col + 2, round(value.credit, 2), custom_format)
                     row += 1
                 worksheet.write(row, col, '', table_header_format)
                 worksheet.write(row, col + 1, '', table_header_format)
-                worksheet.write(row, col + 2, '', table_header_format)
-                worksheet.write(row, col + 3, round(total_credit, 2), table_header_format)
+                worksheet.write(row, col + 2, round(total_credit, 2), table_header_format)
                 row += 1
             else:
                 raise ValidationError(_("Nothing to Print!"))
