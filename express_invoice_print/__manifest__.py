@@ -27,13 +27,14 @@
     'version': "12.0.0.1",
 
     # any module necessary for this one to work correctly
-    'depends': ['base','mail','account','account_accountant','company_extented_fields'],
+    'depends': ['base','mail','account','account_accountant'],
 
     # always loaded
     'data': [
         'views/res_currency.xml',
+        'views/res_company.xml',
         'report/express_invoice_report_view.xml',
-        'report/invoice_report_action.xml'
+        'report/invoice_report_action.xml',
 
     ],
     # only loaded in demonstration mode
