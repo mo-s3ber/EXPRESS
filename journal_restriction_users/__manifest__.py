@@ -8,12 +8,12 @@
         Journal Restriction For Users
     """,
     'author': "Mohamed Saber",
-    'category': 'Uncategorized',
-    'version': '14.1',
-    'depends': ['base','account_accountant','cash_register_payment'],
+    'category': 'Accounting',
+    'version': '15.1',
+    'depends': ['base','account','account_accountant'],
     'data': [
         'security/journal_security.xml',
         'views/account_journal_views.xml',
-        'views/account_move.xml'
+        # 'views/account_move.xml'
     ]
 }
