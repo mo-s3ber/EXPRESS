@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_check_book_form" model="ir.ui.view">
+        <field name="name">check.book.form</field>
+        <field name="model">check.book</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                            name="set_in_use"
+                            states="draft"
+                            string="In Use"
+                            class="oe_highlight"
+                            type="object"
+                    />
+                    <button
+                            name="set_used"
+                            states="in_use"
+                            string="=Used"
+                            class="oe_highlight"
+                            type="object"
+                    />
+                    <field
+                            name="state"
+                            widget="statusbar"
+                            statusbar_visible="draft,in_use,used"
+                    />
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="debit_journal_id" string="Debit Journal"/>
+                            <field name="sequence_id" invisible="1"/>
+                            <field name="journal_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="form" string="From Check Number"/>
+                            <field name="to" string="To Check Number"/>
+                            <field name="prefix" string="Check Numbering Prefix"/>
+                            <field name="padding" string="Next Check Number"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_checkbook_account_journal_form" model="ir.ui.view">
+        <field name="name">account.journal.form</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='advanced_settings']" position="after">
+                <page string="Checkbooks" attrs="{'invisible': [('type', 'not in', ['bank'])]}">
+                    <field name="checkbook_ids">
+                        <tree string="Checkbooks" nolabel="1">
+                            <field name="name"/>
+                            <field name="debit_journal_id" string="Debit Journal"/>
+                            <field name="form" string="From Check Number"/>
+                            <field name="to" string="To Check Number"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

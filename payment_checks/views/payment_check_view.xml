@@ -1,0 +1,213 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="view_payment_check_form" model="ir.ui.view">
+        <field name="name">payment.check.form</field>
+        <field name="model">payment.check</field>
+        <field name="arch" type="xml">
+            <form string="Checks">
+                <header>
+                    <button
+                            name="button_canceled"
+                            states="draft"
+                            string="Cancel"
+                            type="object"
+                    />
+                    <button
+                            name="button_handed"
+                            string="Handed"
+                            attrs="{'invisible': ['|',('type', '!=', 'issue'),('state', '!=', 'draft')]}"
+                            type="object"
+                            class="oe_highlight"
+                    />
+                    <button
+                            name="button_holding"
+                            string="Holding"
+                            attrs="{'invisible': ['|',('type', '!=', 'third'),('state', '!=', 'draft')]}"
+                            type="object"
+                            class="oe_highlight"
+                    />
+                    <button
+                            name="button_debited"
+                            string="Debited"
+                            type="object"
+                            attrs="{'invisible': ['|',('type', '!=', 'issue'),('state', '!=', 'handed')]}"
+                            class="oe_highlight"
+                    />
+                    <button
+                            name="button_deposited"
+                            string="Debited"
+                            type="object"
+                            attrs="{'invisible': ['|',('type', '!=', 'third'),('state', '!=', 'handed')]}"
+                            class="oe_highlight"
+                    />
+                    <button
+                            name="button_changed"
+                            states="handed"
+                            string="Changed"
+                            type="object"
+                            class="oe_highlight"
+                    />
+                    <button
+                            name="button_returned"
+                            string="Debited"
+                            type="object"
+                            attrs="{'invisible': ['|',('type', '!=', 'third'),('state', '!=', 'handed')]}"
+                    />
+                    <button
+                            name="button_rejected"
+                            attrs="{'invisible': ['|',('type', '!=', 'issue'),('state', '!=', 'handed')]}"
+                            string="Rejected"
+                            type="object"
+                    />
+                    <field
+                            name="state"
+                            widget="statusbar"
+                            attrs="{'invisible': [('type', '!=', 'issue')]}"
+                            statusbar_visible="draft,handed,debited,rejected,changed,canceled"
+                            statusbar_colors='{"handed":"blue"}'
+                    />
+                    <field
+                            name="state"
+                            widget="statusbar"
+                            attrs="{'invisible': [('type', '!=', 'third')]}"
+                            statusbar_visible="draft,holding,deposited,returned,changed,canceled"
+                            statusbar_colors='{"handed":"blue"}'
+                    />
+                </header>
+                <sheet>
+                    <h1>
+                        <field readonly="1" name="name" class="oe_inline"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="checkbook_id"/>
+                            <field name="type" invisible="1"/>
+                            <field name="number"/>
+                            <field name="amount"/>
+                        </group>
+                        <group>
+                            <field name="date" string="Issue Date"/>
+                            <field name="payment_date"/>
+                        </group>
+                        <group string="Related Document">
+                            <field name="payment_id"/>
+                            <field name="partner_id" string="Source Partner"
+                                   attrs="{'invisible': [('type', '!=', 'third')]}"/>
+                            <field name="partner_id" string="Destiny Partner"
+                                   attrs="{'invisible': [('type', '!=', 'issue')]}"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="view_payment_check_tree" model="ir.ui.view">
+        <field name="name">payment.check.tree</field>
+        <field name="model">payment.check</field>
+        <field name="arch" type="xml">
+            <tree string="Checks">
+                <field name="checkbook_id"/>
+                <field name="type" invisible="1"/>
+                <field name="journal_id"/>
+                <field name="number"/>
+                <field name="date"/>
+                <field name="payment_date"/>
+                <field name="partner_id" string="Destiny Partner"/>
+                <field name="amount"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_payment_check_search" model="ir.ui.view">
+        <field name="name">payment.check.list.select</field>
+        <field name="model">payment.check</field>
+        <field name="arch" type="xml">
+            <search string="Search Payment Check">
+                <field name="name"/>
+                <field name="number"/>
+                <field name="date" string="Issue Date"/>
+                <field name="payment_date"/>
+                <field name="partner_id"/>
+                <separator/>
+                <field name="state"/>
+                <separator/>
+                <separator/>
+                <filter string="Issue Date" name="date" date="date"/>
+                <filter string="Payment Date" name="payment_date" date="payment_date"/>
+                <group expand="0" string="Group By...">
+                    <filter
+                            name="date"
+                            string="Issue Date"
+                            icon="fa-calendar"
+                            domain="[]"
+                            context="{'group_by':'date'}"
+                    />
+                    <filter
+                            name="payment_date"
+                            string="Payment Date"
+                            icon="fa-calendar"
+                            domain="[]"
+                            context="{'group_by':'payment_date'}"
+                    />
+                    <filter
+                            name="journal_id"
+                            string="Journal"
+                            domain="[]"
+                            context="{'group_by':'journal_id'}"
+                    />
+                    <filter
+                            name="state"
+                            string="Status"
+                            domain="[]"
+                            context="{'group_by':'state'}"
+                    />
+                    <filter
+                            name="partner_id"
+                            string="Partner"
+                            domain="[]"
+                            context="{'group_by':'partner_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="issue_payment_check_action">
+        <field name="name">Issue Checks</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">payment.check</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('type','=','issue')]</field>
+        <field name="search_view_id" ref="view_payment_check_search"/>
+    </record>
+    <record model="ir.actions.act_window" id="third_payment_check_action">
+        <field name="name">Third Checks</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">payment.check</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('type','=','third')]</field>
+        <field name="search_view_id" ref="view_payment_check_search"/>
+    </record>
+    <menuitem
+            id="menu_payment_check_parent"
+            name="Checks"
+            sequence="30"
+            parent="account.menu_finance_entries"
+    />
+    <menuitem
+            id="menu_third_payment_check"
+            sequence="1"
+            parent="menu_payment_check_parent"
+            action="third_payment_check_action"
+    />
+    <menuitem
+            id="menu_issue_payment_check"
+            sequence="2"
+            parent="menu_payment_check_parent"
+            action="issue_payment_check_action"
+    />
+</odoo>

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_check_book,access.check.book,model_check_book,base.group_user,1,1,1,1
+access_payment_check,access.payment.check,model_payment_check,base.group_user,1,1,1,1
+
