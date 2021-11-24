@@ -1,100 +1,97 @@
 <?xml version="1.0" ?>
 <odoo>
+
     <record id="view_payment_check_form" model="ir.ui.view">
         <field name="name">payment.check.form</field>
         <field name="model">payment.check</field>
         <field name="arch" type="xml">
-            <form string="Checks">
+            <form string="Receive Checks">
                 <header>
                     <button
                             name="button_canceled"
-                            states="draft"
+                            attrs="{'invisible': [('state', 'not in',('handed','deposited','holding'))]}"
                             string="Cancel"
                             type="object"
                     />
                     <button
-                            name="button_handed"
-                            string="Handed"
-                            attrs="{'invisible': ['|',('type', '!=', 'issue'),('state', '!=', 'draft')]}"
+                            name="button_holding"
+                            string="Holding"
+                            attrs="{'invisible': ['|',('type', '!=','receive'),('state', 'not in',('draft'))]}"
                             type="object"
                             class="oe_highlight"
                     />
                     <button
-                            name="button_holding"
-                            string="Holding"
-                            attrs="{'invisible': ['|',('type', '!=', 'third'),('state', '!=', 'draft')]}"
+                            name="button_handed"
+                            string="Handed"
+                            attrs="{'invisible': ['|',('type', '!=','issue'),('state', 'not in',('draft'))]}"
+                            type="object"
+                            class="oe_highlight"
+                    />
+                    <button
+                            name="%(action_transfer_vendor_wizard)d"
+                            context="{'default_check_id':id}"
+                            attrs="{'invisible': ['|',('type', '!=','receive'),('state', 'not in',('holding'))]}"
+                            string="Transfer to Vendor" type="action" class="oe_highlight"/>
+                    <button
+                            name="button_deposited"
+                            string="Deposited"
+                            attrs="{'invisible': ['|',('type', '!=','receive'),('state', 'not in',('holding'))]}"
+                            type="object"
+                            class="oe_highlight"
+                    />
+                    <button
+                            name="button_credited"
+                            string="Credited"
+                            attrs="{'invisible': ['|',('type', '!=','issue'),('state', 'not in',('handed'))]}"
                             type="object"
                             class="oe_highlight"
                     />
                     <button
                             name="button_debited"
                             string="Debited"
-                            type="object"
-                            attrs="{'invisible': ['|',('type', '!=', 'issue'),('state', '!=', 'handed')]}"
-                            class="oe_highlight"
-                    />
-                    <button
-                            name="button_deposited"
-                            string="Debited"
-                            type="object"
-                            attrs="{'invisible': ['|',('type', '!=', 'third'),('state', '!=', 'handed')]}"
-                            class="oe_highlight"
-                    />
-                    <button
-                            name="button_changed"
-                            states="handed"
-                            string="Changed"
+                            attrs="{'invisible': ['|',('type', '!=','receive'),('state', 'not in',('deposited'))]}"
                             type="object"
                             class="oe_highlight"
                     />
                     <button
                             name="button_returned"
-                            string="Debited"
-                            type="object"
-                            attrs="{'invisible': ['|',('type', '!=', 'third'),('state', '!=', 'handed')]}"
-                    />
-                    <button
-                            name="button_rejected"
-                            attrs="{'invisible': ['|',('type', '!=', 'issue'),('state', '!=', 'handed')]}"
-                            string="Rejected"
+                            string="Return"
+                            attrs="{'invisible': ['|',('type', '!=','receive'),('state', 'not in',('holding','deposited'))]}"
                             type="object"
                     />
                     <field
                             name="state"
                             widget="statusbar"
-                            attrs="{'invisible': [('type', '!=', 'issue')]}"
-                            statusbar_visible="draft,handed,debited,rejected,changed,canceled"
-                            statusbar_colors='{"handed":"blue"}'
-                    />
-                    <field
-                            name="state"
-                            widget="statusbar"
-                            attrs="{'invisible': [('type', '!=', 'third')]}"
-                            statusbar_visible="draft,holding,deposited,returned,changed,canceled"
-                            statusbar_colors='{"handed":"blue"}'
+                            statusbar_visible="draft,holding,handed,deposited,debited,credited,returned,canceled"
                     />
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="move_tree_view" type="object" icon="fa-bars">
+                            <span>Entries</span>
+                        </button>
+                    </div>
                     <h1>
-                        <field readonly="1" name="name" class="oe_inline"/>
+                        <field readonly="1" force_save="1" name="name" class="oe_inline"/>
                     </h1>
                     <group>
                         <group>
-                            <field name="checkbook_id"/>
-                            <field name="type" invisible="1"/>
-                            <field name="number"/>
-                            <field name="amount"/>
+                            <field name="checkbook_id" attrs="{'invisible': [('type', '!=','issue')],'readonly': [('state', '!=','draft')]}"
+                                   domain="[('journal_id', '=', journal_id),('state', '=', 'in_use')]" widget="selection"/>
+                            <field name="number" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="partner_bank_id" attrs="{'invisible': [('type', '!=','receive')],'readonly': [('state', '!=','draft')]}"/>
+                            <field name="journal_id" readonly="1" force_save="1"/>
+                            <field name="type" readonly="1" force_save="1"/>
+                            <field name="amount" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            <field name="date" string="Issue Date"/>
-                            <field name="payment_date"/>
+                            <field name="date" string="Due Date" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="payment_date" string="Issue Date" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="company_id" groups="base.group_multi_company" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group string="Related Document">
-                            <field name="payment_id"/>
-                            <field name="partner_id" string="Source Partner"
-                                   attrs="{'invisible': [('type', '!=', 'third')]}"/>
-                            <field name="partner_id" string="Destiny Partner"
-                                   attrs="{'invisible': [('type', '!=', 'issue')]}"/>
+                            <field name="payment_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="partner_id" string="Source Partner"/>
                         </group>
                     </group>
                 </sheet>
@@ -111,15 +108,14 @@
         <field name="model">payment.check</field>
         <field name="arch" type="xml">
             <tree string="Checks">
-                <field name="checkbook_id"/>
-                <field name="type" invisible="1"/>
+                <field name="payment_id"/>
                 <field name="journal_id"/>
                 <field name="number"/>
                 <field name="date"/>
                 <field name="payment_date"/>
-                <field name="partner_id" string="Destiny Partner"/>
+                <field name="partner_id"/>
                 <field name="amount"/>
-                <field name="state"/>
+                <field name="state" widget="badge"/>
             </tree>
         </field>
     </record>
@@ -184,12 +180,13 @@
         <field name="domain">[('type','=','issue')]</field>
         <field name="search_view_id" ref="view_payment_check_search"/>
     </record>
-    <record model="ir.actions.act_window" id="third_payment_check_action">
-        <field name="name">Third Checks</field>
+    <record model="ir.actions.act_window" id="receive_payment_check_action">
+        <field name="name">Receive Checks</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">payment.check</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('type','=','third')]</field>
+        <field name="domain">[('type','=','receive')]</field>
+        <field name="context">{'default_type': 'receive'}</field>
         <field name="search_view_id" ref="view_payment_check_search"/>
     </record>
     <menuitem
@@ -199,10 +196,10 @@
             parent="account.menu_finance_entries"
     />
     <menuitem
-            id="menu_third_payment_check"
+            id="menu_receive_payment_check"
             sequence="1"
             parent="menu_payment_check_parent"
-            action="third_payment_check_action"
+            action="receive_payment_check_action"
     />
     <menuitem
             id="menu_issue_payment_check"

@@ -30,13 +30,12 @@ class CheckBook(models.Model):
     _description = "Checkbooks"
 
     name = fields.Char(string='Name')
-    form = fields.Integer()
-    to = fields.Integer()
-    prefix = fields.Char()
-    padding = fields.Integer()
+    from_number = fields.Integer()
+    to_number = fields.Integer()
+    number_next_actual = fields.Integer()
     journal_id = fields.Many2one('account.journal')
-    debit_journal_id = fields.Many2one('account.journal')
-    sequence_id = fields.Many2one('ir.sequence')
+    debit_account_id = fields.Many2one('account.account')
+    credit_account_id = fields.Many2one('account.account')
     state = fields.Selection(
         [
             ('draft', 'Draft'),
@@ -44,20 +43,18 @@ class CheckBook(models.Model):
             ('used', 'Used'),
         ], string='Status', default='draft', readonly=True)
 
+    @api.onchange('from_number')
+    def onchange_from_number(self):
+        if self.from_number:
+            self.number_next_actual = self.from_number
+
+
     def set_in_use(self):
         for rec in self:
-            sequence_id = rec.sequence_id.create(
-                {'name': rec.name,
-                 'code': rec.journal_id.code,
-                 'prefix': rec.prefix,
-                 'padding': rec.padding,
-                 'active': True})
-            rec.sequence_id = sequence_id.id
             rec.state ='in_use'
 
     def set_used(self):
         for rec in self:
-            rec.sequence_id.active = False
             rec.state = 'used'
 
 

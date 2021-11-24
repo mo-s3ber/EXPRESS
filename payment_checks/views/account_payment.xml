@@ -5,10 +5,14 @@
         <field name="model">account.payment</field>
         <field name="inherit_id" ref="account.view_account_payment_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='journal_id']" position="after">
+                <field name="is_check"/>
+                <field name="check_type" invisible="1"/>
+            </xpath>
             <xpath expr="//sheet" position="inside">
-                <notebook>
+                <notebook attrs="{'invisible': [('is_check', '=', False)]}">
                     <page string="Checks">
-                        <field name="checks_ids">
+                        <field name="checks_ids" context="{'default_journal_id': journal_id,'default_payment_date': date,'default_type':check_type}" attrs="{'readonly':[('state', '=', 'posted')]}">
                             <tree string="Checks" nolabel="1">
                                 <field name="journal_id"/>
                                 <field name="number"/>

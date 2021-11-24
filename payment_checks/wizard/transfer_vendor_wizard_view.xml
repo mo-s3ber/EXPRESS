@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="transfer_vendor_wizard_view_form" model="ir.ui.view">
+        <field name="name">transfer.vendor.wizard.form</field>
+        <field name="model">transfer.vendor</field>
+        <field name="arch" type="xml">
+            <form string="Please Select Vendor to Transfer check">
+                <group>
+                    <field name="partner_id"/>
+                    <field name="check_id" invisible="1"/>
+                </group>
+                <footer>
+                    <button string="Apply" class="btn btn-primary" type="object" name="action_post"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_transfer_vendor_wizard" model="ir.actions.act_window">
+        <field name="name">Transfer to Vendor Wizard</field>
+        <field name="res_model">transfer.vendor</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="transfer_vendor_wizard_view_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

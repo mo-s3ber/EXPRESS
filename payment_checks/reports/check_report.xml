@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="check_report_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <h2>
+                            Check Number
+                            <span t-field="o.name"/>
+                        </h2>
+                        <br/>
+                        <br/>
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <strong>Payment Reference:</strong>
+                                    <span t-field="o.payment_id"/>
+                                </td>
+                                <td>
+                                    <strong>Partner:</strong>
+                                    <span t-field="o.partner_id"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Amount:</strong>
+                                    <span t-esc="o.amount"/>
+                                </td>
+                                <td>
+                                    <strong>Currency:</strong>
+                                    <span t-field="o.currency_id"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Issue Date:</strong>
+                                    <span t-field="o.payment_date"/>
+                                </td>
+                                <td>
+                                    <strong>Due Date:</strong>
+                                    <span t-field="o.date"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Partner Bank:</strong>
+                                    <span t-field="o.partner_bank_id"/>
+                                </td>
+                                <td>
+                                    <strong>Check Type:</strong>
+                                    <span t-field="o.type"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <report id="print_payment_check"
+            string="Check"
+            model="payment.check"
+            report_type="qweb-pdf"
+            name="payment_checks.check_report_document"
+            file="payment_checks.check_report_document"
+            menu="True"/>
+
+
+</odoo>
